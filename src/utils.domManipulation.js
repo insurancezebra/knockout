@@ -1,5 +1,7 @@
 (function () {
     var leadingCommentRegex = /^(\s*)<!--(.*?)-->/;
+    var jqueryExpandoRegex = /jQuery\d+?="\d+?"/;
+
 
     function simpleHtmlParse(html) {
         // Based on jQuery's "clean" function, but only accounting for table-related elements.
@@ -38,7 +40,7 @@
     function jQueryHtmlParse(html) {
         // jQuery's "parseHTML" function was introduced in jQuery 1.8.0 and is a documented public API.
         if (jQuery['parseHTML']) {
-            return jQuery['parseHTML'](html) || []; // Ensure we always return an array and never null
+            return jQuery['parseHTML'](html.replace(jqueryExpandoRegex, "")) || []; // Ensure we always return an array and never null
         } else {
             // For jQuery < 1.8.0, we fall back on the undocumented internal "clean" function.
             var elems = jQuery['clean']([html]);
